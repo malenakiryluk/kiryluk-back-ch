@@ -44,11 +44,38 @@ class ProductManager {
 
     }
 
-    static async deleteProduct(){
+    static async deleteProduct(id){
+
+        let products=await this.getProduct()
+        let iProduct=products.findindex(p=>p.id===id)
+        if(iProduct===-1){
+            throw new Error(`no existe el id ${id}`)
+        }
+        let cantidad0=products.length
+        products=products.filter(p=>p.id!==idh)   
+        let cantidad1=products.length
+       
+        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
+
+        return cantidad0-cantidad1
 
     }
 
-    static async modifyProduct(){
+    static async modifyProduct(id, pAModificar={}){
+
+        let products=await this.getProduct()
+        let iProduct=products.findindex(p=>p.id===id)
+        if(iProduct===-1){
+            throw new Error(`no existe el id ${id}`)
+        }
+
+        products[iProduct]={
+            ...products[iProduct],
+            ...pAModificar
+        }
+
+        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
+
 
     }
 
