@@ -6,7 +6,6 @@ const ProductManager = require("../dao/ProductManager.js");
 
 ProductManager.path ="./src/data/product.json";
 
-
 router.get ("/", async (req, res) => {
     let products
     try {
@@ -22,18 +21,15 @@ router.get ("/", async (req, res) => {
             }
         )
     }
-
     res.setHeader('Content-Type', 'application/json');
     return res.status(200).json({payload:products});
-
-
 })
 
 router.get("/:pid", async(req, res) => {
 
-    let {id}=req.params
-    id=Number(id)
-    if(isNaN(id)){
+    let {pid}=req.params
+    id=Number(pid)
+    if(isNaN(pid)){
 
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`el id debe ser numerico`})
@@ -53,11 +49,11 @@ router.get("/:pid", async(req, res) => {
         )
     }
 
-    let product=products.find(p=>p.id===id)
+    let product=products.find(p=>p.id===pid)
     if(!product){
     
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${id}`})
+        return res.status(400).json({error:`producto no encontrado con id ${pid}`})
     }
     
     res.setHeader('Content-Type','application/json');
@@ -69,7 +65,7 @@ router.post("/", async(req, res) => {
     let {title, description, code, price, status, stock, category}=req.body  
     if(!title || !description || !code || !price || !status || !stock || !category) {
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`Tdoso los datos solicitados son obligatorios`})
+        return res.status(400).json({error:`Todos los datos solicitados son obligatorios`})
     }
     if (typeof title !== 'string' || typeof description !== 'string' || typeof code !== 'number' || typeof price !== 'number' || typeof status !== 'boolean' || typeof stock !== 'number' || typeof category !=='string') {
         
@@ -105,9 +101,9 @@ router.post("/", async(req, res) => {
 
 router.put("/:pid", async(req, res) => {
 
-    let {id}=req.params
-    id=Number(id)
-    if(isNaN(id)){
+    let {pid}=req.params
+    id=Number(pid)
+    if(isNaN(pid)){
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`id debe ser numerico`})
     }
@@ -126,11 +122,11 @@ router.put("/:pid", async(req, res) => {
         )
     }
 
-    let product=products.find(p=>p.id===id)
+    let product=products.find(p=>p.id===pid)
     if(!product){
 
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${id}`})
+        return res.status(400).json({error:`producto no encontrado con id ${pid}`})
     }
 
     let pAModificar=req.body
@@ -138,7 +134,7 @@ router.put("/:pid", async(req, res) => {
     delete pAModificar.id;
 
     if(pAModificar.code){
-        let existe=products.find(P=>P.code.toLowerCase()===pAModificar.code.toLowerCase() && p.id!==id)
+        let existe=products.find(P=>P.code.toLowerCase()===pAModificar.code.toLowerCase() && p.id!==pid)
         if(existe){
             res.setHeader('Content-Type','application/json');
             return res.status(400).json({error:`ya hay un producto registrado con codigo ${pAModificar.code}`})
@@ -146,7 +142,7 @@ router.put("/:pid", async(req, res) => {
     }
 
     try {
-        let productModificado=await ProductManager.modifyProduct(id, pAModificar)
+        let productModificado=await ProductManager.modifyProduct(pid, pAModificar)
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({productModificado});
     } catch (error) {
@@ -167,9 +163,9 @@ router.put("/:pid", async(req, res) => {
 
 router.delete("/:pid", async(req, res) => {
 
-    let { id }=req.params
-    id=Number(id)
-    if(isNaN(id)){
+    let { pid }=req.params
+    id=Number(pid)
+    if(isNaN(pid)){
 
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`id debe ser numerico`})
@@ -177,7 +173,7 @@ router.delete("/:pid", async(req, res) => {
 
 
     try {
-        let resultado=await ProductManager.deleteProduct(id)
+        let resultado=await ProductManager.deleteProduct(pid)
         if(resultado>0){
             res.setHeader('Content-Type','application/json');
             return res.status(200).json({payload:"Producto eliminado con exito"});

@@ -19,9 +19,6 @@ class ProductManager {
 
     }
 
-    static async getProductById(){
-
-    }
 
     static async addProduct(product={}){
 
@@ -44,15 +41,15 @@ class ProductManager {
 
     }
 
-    static async deleteProduct(id){
+    static async deleteProduct(pid){
 
         let products=await this.getProduct()
-        let iProduct=products.findindex(p=>p.id===id)
+        let iProduct=products.findindex(p=>p.id===pid)
         if(iProduct===-1){
-            throw new Error(`no existe el id ${id}`)
+            throw new Error(`no existe el id ${pid}`)
         }
         let cantidad0=products.length
-        products=products.filter(p=>p.id!==idh)   
+        products=products.filter(p=>p.id!==pid)   
         let cantidad1=products.length
        
         await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
@@ -61,10 +58,10 @@ class ProductManager {
 
     }
 
-    static async modifyProduct(id, pAModificar={}){
+    static async modifyProduct(pid, pAModificar={}){
 
         let products=await this.getProduct()
-        let iProduct=products.findindex(p=>p.id===id)
+        let iProduct=products.findindex(p=>p.id===pid)
         if(iProduct===-1){
             throw new Error(`no existe el id ${id}`)
         }

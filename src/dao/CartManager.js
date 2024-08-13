@@ -28,22 +28,36 @@ class CartManager{
 
         cart.push({
             id,
-            products:[]
+            products:[...productCart]
         })
 
-        await fs.writeFile(this.path, JSON.stringify(cart), {encoding:"utf"})
+        await fs.promises.writeFile(this.path, JSON.stringify(cart, null, 5))
         return id
 
     };
 
-    static async addToCart(){}
+    static async addToCart(cartId, cart={}){
 
-    static async getCartById(){
+        let carrito = await this.getCart()
+        let indexCart = carrito.findIndex(c=>c.id === cartId)
+        if (indexCart=== -1){
+            throw new Error(`${id} carrito inexistente`)
+            
+        }
+    
 
+        carrito [indexCart] = cart
+        await fs.promises.writeFile(this.path, JSON.stringify(carrito, null, 5))
+        return carrito[indexCart]
         
     }
 
 
 
 
+
 }
+
+
+
+module.exports=CartManager;
