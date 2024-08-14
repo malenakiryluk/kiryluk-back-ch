@@ -28,7 +28,7 @@ class CartManager{
 
         cart.push({
             id,
-            products:[...productCart]
+            products:[]
         })
 
         await fs.promises.writeFile(this.path, JSON.stringify(cart, null, 5))
