@@ -29,7 +29,7 @@ router.get("/:pid", async(req, res) => {
 
     let {pid}=req.params
     id=Number(pid)
-    if(isNaN(pid)){
+    if(isNaN(id)){
 
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`el id debe ser numerico`})
@@ -49,11 +49,11 @@ router.get("/:pid", async(req, res) => {
         )
     }
 
-    let product=products.find(p=>p.id===pid)
+    let product=products.find(p=>p.id===id)
     if(!product){
     
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${pid}`})
+        return res.status(400).json({error:`producto no encontrado con id ${iid}`})
     }
     
     res.setHeader('Content-Type','application/json');
@@ -103,7 +103,7 @@ router.put("/:pid", async(req, res) => {
 
     let {pid}=req.params
     id=Number(pid)
-    if(isNaN(pid)){
+    if(isNaN(id)){
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`id debe ser numerico`})
     }
@@ -122,11 +122,11 @@ router.put("/:pid", async(req, res) => {
         )
     }
 
-    let product=products.find(p=>p.id===pid)
+    let product=products.find(p=>p.id===id)
     if(!product){
 
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${pid}`})
+        return res.status(400).json({error:`producto no encontrado con id ${id}`})
     }
 
     let pAModificar=req.body
@@ -134,7 +134,7 @@ router.put("/:pid", async(req, res) => {
     delete pAModificar.id;
 
     if(pAModificar.code){
-        let existe=products.find(P=>P.code.toLowerCase()===pAModificar.code.toLowerCase() && p.id!==pid)
+        let existe=products.find(P=>P.code.toLowerCase()===pAModificar.code.toLowerCase() && p.id!==id)
         if(existe){
             res.setHeader('Content-Type','application/json');
             return res.status(400).json({error:`ya hay un producto registrado con codigo ${pAModificar.code}`})
@@ -142,7 +142,7 @@ router.put("/:pid", async(req, res) => {
     }
 
     try {
-        let productModificado=await ProductManager.modifyProduct(pid, pAModificar)
+        let productModificado=await ProductManager.modifyProduct(id, pAModificar)
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({productModificado});
     } catch (error) {
@@ -165,7 +165,7 @@ router.delete("/:pid", async(req, res) => {
 
     let { pid }=req.params
     id=Number(pid)
-    if(isNaN(pid)){
+    if(isNaN(id)){
 
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`id debe ser numerico`})
@@ -173,7 +173,7 @@ router.delete("/:pid", async(req, res) => {
 
 
     try {
-        let resultado=await ProductManager.deleteProduct(pid)
+        let resultado=await ProductManager.deleteProduct(id)
         if(resultado>0){
             res.setHeader('Content-Type','application/json');
             return res.status(200).json({payload:"Producto eliminado con exito"});

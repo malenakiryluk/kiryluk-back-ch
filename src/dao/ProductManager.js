@@ -1,18 +1,15 @@
 const fs=require("fs")
 
-
-
 class ProductManager {
-
 
     static path;
 
     static async getProduct(){
 
         if(fs.existsSync(this.path)){
-            let productos=JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
+            let products=JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
             
-            return productos 
+            return products 
         }else{
             return []
         }
@@ -35,7 +32,7 @@ class ProductManager {
 
         products.push(nuevoProduct)
 
-        await fs.promises.writeFile(this.path, JSON.stringify(product, null, 5))
+        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
 
         return nuevoProduct
 
@@ -44,7 +41,7 @@ class ProductManager {
     static async deleteProduct(pid){
 
         let products=await this.getProduct()
-        let iProduct=products.findindex(p=>p.id===pid)
+        let iProduct=products.findIndex(p=>p.id===pid)
         if(iProduct===-1){
             throw new Error(`no existe el id ${pid}`)
         }
@@ -61,7 +58,7 @@ class ProductManager {
     static async modifyProduct(pid, pAModificar={}){
 
         let products=await this.getProduct()
-        let iProduct=products.findindex(p=>p.id===pid)
+        let iProduct=products.findIndex(p=>p.id===pid)
         if(iProduct===-1){
             throw new Error(`no existe el id ${id}`)
         }

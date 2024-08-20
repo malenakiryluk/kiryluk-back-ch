@@ -1,9 +1,9 @@
 const { Router } =require("express");
+const router = Router();
 
 const CartManager = require("../dao/CartManager.js");
 const ProductManager = require("../dao/ProductManager.js");
 
-const router = Router();
 CartManager.path = "./src/data/cart.json";
 
 router.get("/", async (req, res) =>{
@@ -114,7 +114,7 @@ router.post("/", async(req,res) =>{
 
 })
 
-router.put("/:cid/product/:pid", async(req, res) =>{
+router.post("/:cid/product/:pid", async(req, res) =>{
 
     let { cid, pid } = req.params
     cid = Number(cid)
@@ -133,28 +133,27 @@ router.put("/:cid/product/:pid", async(req, res) =>{
     }
 
     let products = await ProductManager.getProduct()
-    let productId = products.find(p=>p.id === pid)
+    let product = products.find(p=>p.id === pid)
+    product = productId.id
     if (!productId) {
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`no existe un producto con id ${pid}`})
     }
 
-    let indiceProduct = cartId.products.findIndex(p=>p.id === pid)
+    let indiceProduct = cartId.products.findIndex(p=>p.product === pid)
     if (!indiceProduct) {
         cartId.products[indiceProduct].quantity++
     }else{
         cartId.products.push({
-            productId,
+            product,
             quantity:1
         })
     }
-
     
     cart = await CartManager.addToCart(cid, cartId)
-
-    
+    res.setHeader('Content-Type','application/json');
+    return res.status(200).json({payload:cartId});
 
 })
-
 
 module.exports={ router };

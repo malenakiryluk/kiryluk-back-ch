@@ -1,16 +1,13 @@
 const fs=require("fs");
 
-
-
-class CartManager{
+class CartManager {
     static path;
 
     static async getCart(){
 
         if(fs.existsSync(this.path)){
-            let cart=JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
-            
-            return cart 
+            let cart = JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
+            return cart
         }else{
             return []
         }
