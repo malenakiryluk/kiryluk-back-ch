@@ -8,5 +8,10 @@ router.get("/", (req, res)=>{
 
 })
 
+router.get("/productsinrealtime", (req, res)=>{
+
+    res.setHeader('Content-Type','application/json');
+    return res.status(200).json('productos en tiempo real');
+})
 
 module.exports={router}

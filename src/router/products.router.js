@@ -1,5 +1,4 @@
 const { Router } =require("express");
-
 const router = Router();
 
 const ProductManager = require("../dao/ProductManager.js");
@@ -50,10 +49,11 @@ router.get("/:pid", async(req, res) => {
     }
 
     let product=products.find(p=>p.id===id)
+    
     if(!product){
     
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${iid}`})
+        return res.status(400).json({error:`producto no encontrado con id ${id}`})
     }
     
     res.setHeader('Content-Type','application/json');

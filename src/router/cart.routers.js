@@ -4,7 +4,7 @@ const router = Router();
 const CartManager = require("../dao/CartManager.js");
 const ProductManager = require("../dao/ProductManager.js");
 
-CartManager.path = "./src/data/cart.json";
+CartManager.path = "./src/data/cart.json"; 
 
 router.get("/", async (req, res) =>{
     let cart
@@ -134,8 +134,8 @@ router.post("/:cid/product/:pid", async(req, res) =>{
 
     let products = await ProductManager.getProduct()
     let product = products.find(p=>p.id === pid)
-    product = productId.id
-    if (!productId) {
+    product = product.id
+    if (!product) {
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`no existe un producto con id ${pid}`})
     }

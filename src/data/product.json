@@ -1,1 +1,12 @@
-[]
+[
+     {
+          "id": 1,
+          "title": "zapatillas airforce one",
+          "description": "zaptillas airforce one nike negras",
+          "code": 175,
+          "price": 170000,
+          "status": true,
+          "stock": 30,
+          "category": "urbanas"
+     }
+]
