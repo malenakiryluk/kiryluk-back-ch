@@ -75,7 +75,7 @@ router.post("/", async(req, res) => {
     }
 
     let products = await ProductManager.getProduct()
-    let existe = products.find(p=>p.code.toLowerCase()===code.toLowerCase())
+    let existe = products.find(p=>p.code===code)
     if(existe){
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`Ya existe un producto con codigo ${code}`});
@@ -84,6 +84,10 @@ router.post("/", async(req, res) => {
     try {
         let preProd={title, description, code, price, status, stock, category}
         let nuevoProd=await ProductManager.addProduct(preProd)
+
+        let productsAct = await ProductManager.getProduct()
+        req.io.emit('productosActualizados', productsAct)
+
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({nuevoProd});
     } catch (error) {

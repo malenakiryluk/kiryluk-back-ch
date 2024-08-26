@@ -9,10 +9,9 @@ const {Server} = require("socket.io");
 //const { Server } = require("http");
 let io;
 
+const PORT=8080;
 
-const PORT = 8080;
-
-const app = express();
+const app=express();
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
@@ -20,14 +19,15 @@ app.set('views', path.join(__dirname,'./views'));
 app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use("/api/product", productRouter);
+app.use(express.static("./src/public"))
 app.use(
-    "/api/cart", 
+    "/api/product",
     (req, res, next)=>{
-        req.socket= io
+        req.io= io
         next()
     },
-    cartRouter);
+    productRouter);
+app.use("/api/cart", cartRouter);
 
 app.use("/", viewsRouter);
 

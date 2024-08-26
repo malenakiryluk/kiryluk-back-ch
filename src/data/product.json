@@ -8,5 +8,25 @@
           "status": true,
           "stock": 30,
           "category": "urbanas"
+     },
+     {
+          "id": 2,
+          "title": "jordan 1 low x TS",
+          "description": "jordan 1 x travis scott moka",
+          "code": 357,
+          "price": 300000,
+          "status": true,
+          "stock": 10,
+          "category": "basket"
+     },
+     {
+          "id": 3,
+          "title": "luka 2",
+          "description": "jordan Luka 2 ",
+          "code": 968,
+          "price": 270000,
+          "status": true,
+          "stock": 20,
+          "category": "basket"
      }
 ]
