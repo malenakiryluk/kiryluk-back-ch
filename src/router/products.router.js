@@ -179,6 +179,8 @@ router.delete("/:pid", async(req, res) => {
     try {
         let resultado=await ProductManager.deleteProduct(id)
         if(resultado>0){
+            let productsAct = await ProductManager.getProduct()
+            req.io.emit('productosActualizados', productsAct)
             res.setHeader('Content-Type','application/json');
             return res.status(200).json({payload:"Producto eliminado con exito"});
         }else{
