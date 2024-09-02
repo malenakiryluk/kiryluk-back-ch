@@ -1,14 +1,15 @@
 const socket = io()
 const productConteiner = document.getElementById('productConteiner')
-
-socket.on('productsAct', productsAct=>{
+console.log(socket)
+socket.on("productsAct", products=>{
+    console.log("los productos modificados son:")
     let liProduct= document.createElement('li')
-    liProduct.innerHTML=`<h3>${productsAct.title}</h3>
-                        <h3>${productsAct.description}</h3>
-                        <h3>${productsAct.price}</h3>
-                        <h3>${productsAct.stock}</h3>
-                        <h3>${productsAct.category}</h3>`
+    liProduct.innerHTML=`<h3>${products.title}</h3>
+                        <h3>${products.description}</h3>
+                        <h3>${products.price}</h3>
+                        <h3>${products.stock}</h3>
+                        <h3>${products.category}</h3>`
 
-    productConteiner.append(liProducto)
+    productConteiner.appendChild(liProduct)
 })
 

@@ -138,7 +138,7 @@ router.put("/:pid", async(req, res) => {
     delete pAModificar.id;
 
     if(pAModificar.code){
-        let existe=products.find(P=>P.code.toLowerCase()===pAModificar.code.toLowerCase() && p.id!==id)
+        let existe=products.find(P=>P.code===pAModificar.code && p.id!==id)
         if(existe){
             res.setHeader('Content-Type','application/json');
             return res.status(400).json({error:`ya hay un producto registrado con codigo ${pAModificar.code}`})
