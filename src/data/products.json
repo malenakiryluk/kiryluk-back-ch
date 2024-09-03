@@ -1,0 +1,22 @@
+[
+     {
+          "id": 1,
+          "title": "lebron 17",
+          "description": "lebron 17 triple red",
+          "code": 188,
+          "price": 270000,
+          "status": true,
+          "stock": 10,
+          "category": "basket"
+     },
+     {
+          "id": 2,
+          "title": "airforce one",
+          "description": "zapatillas airforce one classic",
+          "code": 323,
+          "price": 180000,
+          "status": true,
+          "stock": 3,
+          "category": "urbanas"
+     }
+]

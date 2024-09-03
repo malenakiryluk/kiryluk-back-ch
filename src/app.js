@@ -21,13 +21,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("./src/public"))
 app.use(
-    "/api/product",
+    "/api/products",
     (req, res, next)=>{
         req.io= io
         next()
     },
     productRouter);
-app.use("/api/cart", cartRouter);
+app.use("/api/carts", cartRouter);
 
 app.use("/", viewsRouter);
 

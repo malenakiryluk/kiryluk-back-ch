@@ -3,7 +3,9 @@ const router = Router();
 
 const ProductManager = require("../dao/ProductManager.js");
 
-ProductManager.path ="./src/data/product.json";
+ProductManager.path ="./src/data/products.json";
+
+
 
 router.get ("/", async (req, res) => {
     let products
@@ -138,7 +140,7 @@ router.put("/:pid", async(req, res) => {
     delete pAModificar.id;
 
     if(pAModificar.code){
-        let existe=products.find(P=>P.code===pAModificar.code && p.id!==id)
+        let existe=products.find(p=>p.code===pAModificar.code && p.id!==id)
         if(existe){
             res.setHeader('Content-Type','application/json');
             return res.status(400).json({error:`ya hay un producto registrado con codigo ${pAModificar.code}`})
@@ -147,6 +149,8 @@ router.put("/:pid", async(req, res) => {
 
     try {
         let productModificado=await ProductManager.modifyProduct(id, pAModificar)
+        let productsAct = await ProductManager.getProduct()
+        req.io.emit('productosActualizados', productsAct)
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({productModificado});
     } catch (error) {

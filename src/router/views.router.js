@@ -13,7 +13,7 @@ router.get("/", async(req, res)=>{
 
 })
 
-router.get("/productsinrealtime", (req, res)=>{
+router.get("/realtimeproducts", (req, res)=>{
 
     res.setHeader('Content-Type','text/html');
     return res.status(200).render('products');

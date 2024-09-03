@@ -4,7 +4,7 @@ const router = Router();
 const CartManager = require("../dao/CartManager.js");
 const ProductManager = require("../dao/ProductManager.js");
 
-CartManager.path = "./src/data/cart.json"; 
+CartManager.path = "./src/data/carts.json"; 
 
 router.get("/", async (req, res) =>{
     let cart
