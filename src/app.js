@@ -6,7 +6,7 @@ const { router:viewsRouter }= require("./router/views.router.js")
 const engine=require('express-handlebars').engine
 const path=require('path');
 const {Server} = require("socket.io");
-const {connDB}=require('./connDB.js');
+const connDB=require('./connDB.js');
 //const { Server } = require("http");
 let io;
 
