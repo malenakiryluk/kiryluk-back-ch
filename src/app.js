@@ -1,11 +1,12 @@
 const express = require("express");
 const fs = require("fs");
 const { router:productRouter } = require("./router/products.router.js");
-const { router:cartRouter } = require("./router/cart.routers");
+const { router:cartRouter } = require("./router/carts.routers");
 const { router:viewsRouter }= require("./router/views.router.js")
 const engine=require('express-handlebars').engine
 const path=require('path');
 const {Server} = require("socket.io");
+const {connDB}=require('./connDB.js');
 //const { Server } = require("http");
 let io;
 
@@ -41,4 +42,6 @@ app.get("/", (req, res)=>{
 
 const server =app.listen(PORT, ()=>console.log(`servidor activo en puerto ${PORT}`));
 io=new Server(server);
+
+connDB();
 
