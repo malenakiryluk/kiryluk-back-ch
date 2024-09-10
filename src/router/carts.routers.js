@@ -1,10 +1,11 @@
 const { Router } =require("express");
 const router = Router();
 
-const CartManager = require("../dao/CartManager.js");
-const ProductManager = require("../dao/ProductManager.js");
+const CartManager = CartMongoManager=require("../dao/CartMongoManager.js");
+const ProductManager = ProductMongoManager =require("../dao/ProductMongoManager.js");
+const { isValidObjectId } = require("mongoose");
 
-CartManager.path = "./src/data/carts.json"; 
+//CartManager.path = "./src/data/carts.json"; 
 
 router.get("/", async (req, res) =>{
     let cart
@@ -29,16 +30,16 @@ router.get("/", async (req, res) =>{
 router.get("/:cid", async(req, res) => {
 
     let {cid}=req.params
-    id=Number(cid)
-    if(isNaN(cid)){
+    if(!isValidObjectId(cid)){
 
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`el id debe ser numerico`})
+        return res.status(400).json({error:`el id debe ser valido`})
     }
 
-    let cart;
     try {
-        cart=await CartManager.getCart()
+        let cart=await CartManager.getCartBy({_id:cid})
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({payload:cart});
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');
@@ -49,16 +50,6 @@ router.get("/:cid", async(req, res) => {
             }
         )
     }
-
-    let cartToFind = cart.find(p=>p.id === cid)
-    if(!cartToFind){
-    
-        res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`carrito no encontrado con id ${cid}`})
-    }
-
-    res.setHeader('Content-Type','application/json');
-    return res.status(200).json({payload:cartToFind});
 
 })
 
@@ -66,6 +57,8 @@ router.post("/", async(req,res) =>{
 
     try {
         cart=await CartManager.createCarrito()
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({cart});
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');
@@ -77,8 +70,7 @@ router.post("/", async(req,res) =>{
         )
     }
 
-    res.setHeader('Content-Type','application/json');
-    return res.status(200).json({payload:`carrito creado con exito`});
+    
 
     /*let { id } = req.body
     if (!id || typeof id !== 'number') {
@@ -117,42 +109,38 @@ router.post("/", async(req,res) =>{
 router.post("/:cid/product/:pid", async(req, res) =>{
 
     let { cid, pid } = req.params
-    cid = Number(cid)
-    pid = Number(pid)
-    if (isNaN(cid)|| isNaN(pid)) {
+    if (!isValidObjectId(cid)|| !isValidObjectId(pid)) {
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`Los id's deben ser numericos`})
+        return res.status(400).json({error:`Los id's deben ser validos`})
         
     }
 
-    let cart = await CartManager.getCart()
-    let cartId = cart.find(c=>c.id === cid)
-    if (!cartId) {
+    let cart = await CartManager.getCartBy({_id:cid})
+    if (!cart) {
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`no existe un carrito con id ${cid}`})
     }
 
-    let products = await ProductManager.getProduct()
-    let product = products.find(p=>p.id === pid)
-    product = product.id
+    let product = await ProductManager.getProductBy({_id:pid})
     if (!product) {
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`no existe un producto con id ${pid}`})
     }
 
-    let indiceProduct = cartId.products.findIndex(p=>p.product === pid)
-    if (!indiceProduct) {
-        cartId.products[indiceProduct].quantity++
-    }else{
-        cartId.products.push({
-            product,
+    let indiceProduct = cart.products.findIndex(p=>p.product._id==pid)
+    if (indiceProduct===-1) {
+        cart.products.push({
+            product:pid,
             quantity:1
         })
+        
+    }else{
+        cart.products[indiceProduct].quantity++
     }
     
-    cart = await CartManager.addToCart(cid, cartId)
+    cart = await CartManager.addToCart(cid, cart)
     res.setHeader('Content-Type','application/json');
-    return res.status(200).json({payload:cartId});
+    return res.status(200).json({payload:cart});
 
 })
 

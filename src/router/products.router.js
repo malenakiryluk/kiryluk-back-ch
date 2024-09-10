@@ -1,14 +1,20 @@
 const { Router } =require("express");
 const router = Router();
+const  ProductManager = ProductMongoManager = require("../dao/ProductMongoManager");
+const { isValidObjectId } = require("mongoose");
 
-const ProductManager = require("../dao/ProductManager.js");
-
-ProductManager.path ="./src/data/products.json";
-
-
+//ProductManager.path ="./src/data/products.json";
 
 router.get ("/", async (req, res) => {
     let products
+    let { page, limit } = req.query
+    if (!page || isNaN(Number(page))){
+        page = 1
+    }
+    if (!limit || isNaN(Number(limit))){
+        limit = 10
+    }
+    
     try {
         products = await ProductManager.getProduct()
         
@@ -29,16 +35,22 @@ router.get ("/", async (req, res) => {
 router.get("/:pid", async(req, res) => {
 
     let {pid}=req.params
-    id=Number(pid)
-    if(isNaN(id)){
-
+    if(!isValidObjectId(pid)){
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`el id debe ser numerico`})
+        return res.status(400).json({error:`ID en formato invalido`})
     }
 
-    let products;
+   // let products;
     try {
-        products=await ProductManager.getProduct()
+        //products=await ProductManager.getProduct()
+        let product=await ProductManager.getProductBy({_id:pid})
+        if(!product){
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`producto no encontrado con id ${id}`})
+        }
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({payload:product});
+
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');
@@ -50,7 +62,7 @@ router.get("/:pid", async(req, res) => {
         )
     }
 
-    let product=products.find(p=>p.id===id)
+    /*let product=products.find(p=>p.id===id)
     
     if(!product){
     
@@ -59,7 +71,8 @@ router.get("/:pid", async(req, res) => {
     }
     
     res.setHeader('Content-Type','application/json');
-    return res.status(200).json({payload:product});
+    return res.status(200).json({payload:product});*/
+
 
 })
 
@@ -76,14 +89,21 @@ router.post("/", async(req, res) => {
 
     }
 
-    let products = await ProductManager.getProduct()
-    let existe = products.find(p=>p.code===code)
-    if(existe){
-        res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`Ya existe un producto con codigo ${code}`});
-    }
 
     try {
+       /* let products = await ProductManager.getProduct()
+        let existe = products.find(p=>p.code===code)
+        if(existe){
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`Ya existe un producto con codigo ${code}`});
+        }*/
+    
+        let existe = await ProductManager.getProductBy({code})
+        if(existe){
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`Ya existe un producto con codigo ${code}`});
+        }
+
         let preProd={title, description, code, price, status, stock, category}
         let nuevoProd=await ProductManager.addProduct(preProd)
 
@@ -91,7 +111,8 @@ router.post("/", async(req, res) => {
         req.io.emit('productosActualizados', productsAct)
 
         res.setHeader('Content-Type','application/json');
-        return res.status(200).json({nuevoProd});
+        return res.status(201).json({nuevoProd});
+
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');
@@ -108,11 +129,12 @@ router.post("/", async(req, res) => {
 router.put("/:pid", async(req, res) => {
 
     let {pid}=req.params
-    id=Number(pid)
-    if(isNaN(id)){
+    if(!isValidObjectId(pid)){
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`id debe ser numerico`})
+        return res.status(400).json({error:`id en formato invalido`})
     }
+
+    let pAModificar=req.body
 
     let products;
     try {
@@ -128,19 +150,19 @@ router.put("/:pid", async(req, res) => {
         )
     }
 
-    let product=products.find(p=>p.id===id)
+    let product=products.find(p=>p.id===pid)
     if(!product){
 
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${id}`})
+        return res.status(400).json({error:`producto no encontrado con id ${pid}`})
     }
+    /*let pAModificar=req.body
 
-    let pAModificar=req.body
+    delete pAModificar.id;*/
 
-    delete pAModificar.id;
 
     if(pAModificar.code){
-        let existe=products.find(p=>p.code===pAModificar.code && p.id!==id)
+        let existe=products.find(p=>p.code===pAModificar.code && p.id!==pid)
         if(existe){
             res.setHeader('Content-Type','application/json');
             return res.status(400).json({error:`ya hay un producto registrado con codigo ${pAModificar.code}`})
@@ -148,7 +170,11 @@ router.put("/:pid", async(req, res) => {
     }
 
     try {
-        let productModificado=await ProductManager.modifyProduct(id, pAModificar)
+        let productModificado = await ProductManager.modifyProduct(pid,pAModificar)
+        if(!productModificado){
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`no se ha podido modificar el producto`})
+        }
         let productsAct = await ProductManager.getProduct()
         req.io.emit('productosActualizados', productsAct)
         res.setHeader('Content-Type','application/json');
@@ -164,33 +190,34 @@ router.put("/:pid", async(req, res) => {
         )
     }
 
-
-
-
 })
 
 router.delete("/:pid", async(req, res) => {
 
     let { pid }=req.params
-    id=Number(pid)
-    if(isNaN(id)){
+    if(!isValidObjectId(pid)){
 
         res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`id debe ser numerico`})
+        return res.status(400).json({error:`id en formato invalido`})
     }
 
 
     try {
-        let resultado=await ProductManager.deleteProduct(id)
+        /*let resultado=await ProductManager.deleteProduct(id)
         if(resultado>0){
             let productsAct = await ProductManager.getProduct()
             req.io.emit('productosActualizados', productsAct)
+
+        }*/
+        let pDeleted=await ProductManager.deleteProduct(pid)
+        if(!pDeleted){
             res.setHeader('Content-Type','application/json');
-            return res.status(200).json({payload:"Producto eliminado con exito"});
-        }else{
-            res.setHeader('Content-Type','application/json');
-            return res.status(500).json({error:`Error al eliminar el producto`})
+            return res.status(400).json({error:`no se ha podido eliminar el producto correcatmente`})
         }
+        let productsAct = await ProductManager.getProduct()
+        req.io.emit('productosActualizados', productsAct)
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({pDeleted});
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');

@@ -11,8 +11,10 @@ socket.on('productosActualizados', products=>{
                         <h3>${product.stock}</h3>
                         <h3>${product.category}</h3>`
 
-    productConteiner.appendChild(liProduct)
+    productConteiner.append(liProduct)
    })
     
 })
+
+
 
