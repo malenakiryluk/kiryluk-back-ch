@@ -7,16 +7,22 @@ const { isValidObjectId } = require("mongoose");
 
 router.get ("/", async (req, res) => {
     let products
-    let { page, limit } = req.query
+    let { page, limit, filter } = req.query
     if (!page || isNaN(Number(page))){
         page = 1
     }
     if (!limit || isNaN(Number(limit))){
         limit = 10
     }
+    if(!filter || typeof filter ==! 'string'){
+        filter={}
+    }
     
     try {
-        products = await ProductManager.getProduct()
+        products = await ProductManager.getProduct(page,limit)
+        products.products= products.docs
+        delete products.docs
+        delete products.totalDocs
         
     } catch (error) {
         console.log(error);

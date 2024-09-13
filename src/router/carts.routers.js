@@ -144,4 +144,115 @@ router.post("/:cid/product/:pid", async(req, res) =>{
 
 })
 
+router.delete("/:cid/product/:pid",async(req,res)=>{
+    let { cid, pid }= req.params
+    console.log(cid, pid)
+    if (!isValidObjectId(cid)|| !isValidObjectId(pid)) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`Los id's deben ser validos`})
+        
+    }
+
+    let cart = await CartManager.getCartBy({_id:cid})
+    if (!cart) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`no existe un carrito con id ${cid}`})
+    }
+   // let product = await ProductManager.getProductBy({_id:pid})
+   /* if (!product) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`no existe un producto con id ${pid}`})
+    }*/
+
+    let indiceProduct = cart.products.findIndex(p=>p.product._id==pid)
+    if(indiceProduct === -1){
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`no existe un producto con id ${pid} en este carriro`})
+    }else{
+        cart.products.splice(indiceProduct,1)
+    }
+
+    cart = await CartManager.addToCart(cid, cart)
+    res.setHeader('Content-Type','application/json');
+    return res.status(200).json({payload:cart});
+})
+
+router.delete("/:cid", async(req,res)=>{
+
+    let {cid}=req.params
+    if (!isValidObjectId(cid) || !cid) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`el id ${cid} no es valido`})
+    }
+    try {
+        let cart=await CartManager.getCartBy({_id:cid})
+        let newCart=cart.products=[]
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({payload:newCart});
+
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type','application/json');
+        return res.status(500).json(
+            {
+                error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle:`${error.message}`
+            }
+        )
+    }
+})
+
+router.put("/:cid", async(req,res)=>{
+    let {cid}=req.params
+    let {array} = req.body
+    if(!isValidObjectId(cid)){
+
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`el id debe ser valido`})
+    }
+
+
+})
+
+router.put("/:cid/product/:pid", async(req,res)=>{
+    let {cid, pid}=req.params
+    let { quantity }= req.body
+    if(!isValidObjectId(cid)|| !isValidObjectId(pid)){
+
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`el id debe ser valido`})
+    }
+    let cart = await CartManager.getCartBy({_id:cid})
+    if (!cart) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`no existe un carrito con id ${cid}`})
+    }
+
+    let indiceProduct = cart.products.findIndex(p=>p.product._id==pid)
+    if(indiceProduct === -1){
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`no existe un producto con id ${pid} en este carriro`})
+    }else{
+        cart.products[indiceProduct].quantity = quantity
+    }
+
+    try {
+        cart = await CartManager.addToCart(cid, cart)
+    res.setHeader('Content-Type','application/json');
+    return res.status(200).json({payload:cart});
+        
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type','application/json');
+        return res.status(500).json(
+            {
+                error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle:`${error.message}`
+            }
+        )
+    }
+    
+
+})
+
 module.exports={ router };

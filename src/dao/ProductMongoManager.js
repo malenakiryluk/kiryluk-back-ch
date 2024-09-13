@@ -2,20 +2,20 @@
 const productsModel = require("./models/productsModels")
 
 class ProductMongoManager {
-    static path;
+    //static path;
 
     static async getProduct(page=1, limit=10){
         return await productsModel.paginate({},{lean:true, page, limit})
     }
-
+ 
     static async getProductBy(filter={}){
         return await productsModel.findOne(filter).lean()
     }
 
+
     static async addProduct(product={}){
 
-        let newProduct = await productsModel.create(product)
-        return newProduct.toJSON()
+        return await productsModel.create(product)
        
     }
 
