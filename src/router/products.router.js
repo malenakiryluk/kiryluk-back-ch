@@ -7,7 +7,7 @@ const { isValidObjectId } = require("mongoose");
 
 router.get ("/", async (req, res) => {
     let products
-    let { page, limit, filter } = req.query
+    let { page, limit, filter, sort } = req.query
     if (!page || isNaN(Number(page))){
         page = 1
     }
@@ -16,6 +16,10 @@ router.get ("/", async (req, res) => {
     }
     if(!filter || typeof filter ==! 'string'){
         filter={}
+    }
+
+    if (!sort || sort ==! "asc" || sort==! "desc") {
+        sort={}
     }
     
     try {

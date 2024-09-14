@@ -15,7 +15,8 @@ class ProductMongoManager {
 
     static async addProduct(product={}){
 
-        return await productsModel.create(product)
+        let newProduct=await productsModel.create(product)
+        return newProduct.toJSON()
        
     }
 
