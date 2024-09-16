@@ -6,10 +6,6 @@ const CartManager = CartMongoManager=require("../dao/CartMongoManager.js");
 
 router.get("/", async(req, res)=>{
 
-    let products = await ProductManager.getProduct()
-    products.products= products.docs
-    delete products.docs
-    delete products.totalDocs
     res.setHeader('Content-Type','text/html');
     res.status(200).render('home');
 

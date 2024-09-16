@@ -1,6 +1,15 @@
 const socket = io()
 const productConteiner = document.getElementById('productConteiner')
 
+const addToCart= async(prodID)=>{
+   console.log({prodID});
+   let respuesta = await fetch(`/api/carts/66dfa0f34c7548ba9c91733a/product/${prodID}`,{
+      method:"put"
+   })
+   //disclaimer: al no tener un sistema de login dejo hardcodeado el carrito para que 
+   //siempre se agregue a ese. Sigo las indicaciones del profe.
+   console.log(respuesta.status);
+}
 socket.on('productosActualizados', productsAct=>{
    productsAct.products= productsAct.docs
    delete productsAct.docs
@@ -21,15 +30,7 @@ socket.on('productosActualizados', productsAct=>{
    } 
 })
 
-const addToCart= async(prodID)=>{
-   console.log({prodID});
-   let respuesta = await fetch(`/api/carts/66dfa0f34c7548ba9c91733a/product/${prodID}`,{
-      method:"put"
-   })
-   //disclaimer: al no tener un sistema de login dejo hardcodeado el carrito para que 
-   //siempre se agregue a ese. Sigo las indicaciones del profe.
-   console.log(respuesta.status);
-}
+
 
 
 
