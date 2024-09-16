@@ -212,7 +212,7 @@ router.put("/:cid", async(req,res)=>{
     }
 
 
-})
+})// en este punto no llegue a comprender exactamente que pedia la consigna
 
 router.put("/:cid/product/:pid", async(req,res)=>{
     let {cid, pid}=req.params
