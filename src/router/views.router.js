@@ -4,17 +4,17 @@ const router=Router()
 const ProductManager = ProductMongoManager = require("../dao/ProductMongoManager");
 const CartManager = CartMongoManager=require("../dao/CartMongoManager.js");
 
-router.get("/", async(req, res)=>{
+router.get("/products", async(req, res)=>{
 
     res.setHeader('Content-Type','text/html');
-    res.status(200).render('home');
+    res.status(200).render('products');
 
 })
 
 router.get("/realtimeproducts", (req, res)=>{
 
     res.setHeader('Content-Type','text/html');
-    return res.status(200).render('products');
+    return res.status(200).render('realTimeProducts');
 })
 
 router.get("/carts/:cid", async(req,res)=>{

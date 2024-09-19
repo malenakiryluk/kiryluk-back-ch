@@ -6,16 +6,35 @@ const { isValidObjectId } = require("mongoose");
 //ProductManager.path ="./src/data/products.json";
 
 router.get ("/", async (req, res) => {
-    let products
-    let { page, limit, filter, sort } = req.query
+
+    let { page, limit, cat, sort } = req.query
+    let filter = {category:cat}
     if (!page || isNaN(Number(page))){
         page = 1
     }
     if (!limit || isNaN(Number(limit))){
         limit = 10
     }
-    if(!filter || typeof filter ==! 'string'){
-        filter={}
+    if(!cat || typeof cat ==! 'string'){
+        try {
+            console.log(cat);
+            let products = await ProductManager.getProduct(page,limit)
+            products.products= products.docs
+            delete products.docs
+            delete products.totalDocs
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(200).json({payload:products});
+            
+        } catch (error) {
+            console.log(error);
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(500).json(
+                {
+                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                    detalle: `${error.message}`
+                }
+            )
+        }
     }
 
     if (!sort || sort ==! "asc" || sort==! "desc") {
@@ -23,10 +42,13 @@ router.get ("/", async (req, res) => {
     }
     
     try {
-        products = await ProductManager.getProduct(page,limit)
+        console.log(cat);
+        let products = await ProductManager.getProduct(page,limit,filter)
         products.products= products.docs
         delete products.docs
         delete products.totalDocs
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json({payload:products});
         
     } catch (error) {
         console.log(error);
@@ -38,8 +60,6 @@ router.get ("/", async (req, res) => {
             }
         )
     }
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json({payload:products});
 })
 
 router.get("/:pid", async(req, res) => {

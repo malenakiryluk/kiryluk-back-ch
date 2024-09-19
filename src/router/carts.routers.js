@@ -38,6 +38,10 @@ router.get("/:cid", async(req, res) => {
 
     try {
         let cart=await CartManager.getCartBy({_id:cid})
+        if (!cart) {
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`no exites un carrito con el id indicado`})
+        }
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({payload:cart});
     } catch (error) {
@@ -188,7 +192,7 @@ router.delete("/:cid", async(req,res)=>{
         let cart=await CartManager.getCartBy({_id:cid})
         let newCart=cart.products=[]
         res.setHeader('Content-Type','application/json');
-        return res.status(200).json({payload:newCart});
+        return res.status(200).json({payload:"el carrito fue eliminado con exito"});
 
     } catch (error) {
         console.log(error);
@@ -204,14 +208,50 @@ router.delete("/:cid", async(req,res)=>{
 
 router.put("/:cid", async(req,res)=>{
     let {cid}=req.params
-    let {array} = req.body
+    let {products} = req.body
     if(!isValidObjectId(cid)){
 
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`el id debe ser valido`})
     }
-
-
+    if (!products) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`el objeto debe tener contenido`})
+    }
+    try {
+        let cart = await CartManager.getCartBy({_id:cid})
+        if (!cart) {
+            res.setHeader('Content-Type','application/json');
+            return res.status(400).json({error:`no exites un carrito con el id indicado`})
+        }
+        products.forEach(async p => {
+            let product = await ProductManager.getProductBy({_id:p.product})
+            //console.log(p.product);
+            if (!product) {
+                res.setHeader('Content-Type','application/json');
+                return res.status(400).json({error:`producto con id ${p.product} no existente`})
+            }
+        });
+        //console.log(products);
+        cart.products.push({
+            ...products
+        })
+        console.log(cart.products);
+        cart=await CartManager.addToCart(cid,cart)
+        res.setHeader('Content-Type','application/json');
+        return res.status(200).json({payload:cart});
+        
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type','application/json');
+        return res.status(500).json(
+            {
+                error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle:`${error.message}`
+            }
+        )
+        
+    }
 })// en este punto no llegue a comprender exactamente que pedia la consigna
 
 router.put("/:cid/product/:pid", async(req,res)=>{
