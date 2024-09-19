@@ -4,9 +4,9 @@ const productsModel = require("./models/productsModels")
 class ProductMongoManager {
     //static path;
 
-    static async getProduct(page=1, limit=10, filter){
-        console.log(filter);
-        return await productsModel.paginate({filter},{lean:true, page, limit})
+    static async getProduct(page, limit, sort,cat){
+        //console.log(filter);
+        return await productsModel.paginate({},{lean:true, page, limit, sort:{price:sort}})
     }
  
     static async getProductBy(filter={}){

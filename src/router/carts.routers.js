@@ -190,9 +190,11 @@ router.delete("/:cid", async(req,res)=>{
     }
     try {
         let cart=await CartManager.getCartBy({_id:cid})
-        let newCart=cart.products=[]
+        cart.products=[]
+        console.log(cart);
+        await CartManager.addToCart(cid,cart)
         res.setHeader('Content-Type','application/json');
-        return res.status(200).json({payload:"el carrito fue eliminado con exito"});
+        return res.status(200).json({payload:"el carrito fue vaciado con exito"});
 
     } catch (error) {
         console.log(error);
@@ -224,22 +226,26 @@ router.put("/:cid", async(req,res)=>{
             res.setHeader('Content-Type','application/json');
             return res.status(400).json({error:`no exites un carrito con el id indicado`})
         }
+        cart.products=[]
         products.forEach(async p => {
             let product = await ProductManager.getProductBy({_id:p.product})
-            //console.log(p.product);
             if (!product) {
                 res.setHeader('Content-Type','application/json');
                 return res.status(400).json({error:`producto con id ${p.product} no existente`})
             }
+            cart.products.push({
+                product:p.product,
+                quantity:p.quantity
+    
+            })
+            //console.log(cart.products);
+            cart=await CartManager.addToCart(cid,cart)
+            
         });
         //console.log(products);
-        cart.products.push({
-            ...products
-        })
-        console.log(cart.products);
-        cart=await CartManager.addToCart(cid,cart)
         res.setHeader('Content-Type','application/json');
         return res.status(200).json({payload:cart});
+        //console.log(cart.products);
         
     } catch (error) {
         console.log(error);

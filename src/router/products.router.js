@@ -7,43 +7,27 @@ const { isValidObjectId } = require("mongoose");
 
 router.get ("/", async (req, res) => {
 
-    let { page, limit, cat, sort } = req.query
-    let filter = {category:cat}
+    let { page, limit, sort, cat } = req.query
+    sort=Number(sort)
+    console.log(page,limit,sort,cat);
+    console.log(typeof cat);
+    //let filter = {category:cat}
     if (!page || isNaN(Number(page))){
         page = 1
     }
     if (!limit || isNaN(Number(limit))){
         limit = 10
     }
-    if(!cat || typeof cat ==! 'string'){
-        try {
-            console.log(cat);
-            let products = await ProductManager.getProduct(page,limit)
-            products.products= products.docs
-            delete products.docs
-            delete products.totalDocs
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({payload:products});
-            
-        } catch (error) {
-            console.log(error);
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json(
-                {
-                    error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                    detalle: `${error.message}`
-                }
-            )
-        }
-    }
+    //if(!cat || typeof cat ==! 'string'){
+    //    cat="basketball"
+    //}
 
-    if (!sort || sort ==! "asc" || sort==! "desc") {
-        sort={}
+    if (!sort || sort ==! 1 || sort==! -1) {
+        sort=1
     }
     
     try {
-        console.log(cat);
-        let products = await ProductManager.getProduct(page,limit,filter)
+        let products = await ProductManager.getProduct(page,limit,sort)
         products.products= products.docs
         delete products.docs
         delete products.totalDocs

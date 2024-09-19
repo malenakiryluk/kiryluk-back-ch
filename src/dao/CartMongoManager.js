@@ -17,8 +17,9 @@ class CartManager {
         return newCart.toJSON()
     };
 
-    static async addToCart(cartId, cart={}){
-
+    static async addToCart(cartId, cart){
+        //console.log(cart);
+        console.log(cart.products);
         return await cartsModel.updateOne({_id:cartId},cart)
     }
 
