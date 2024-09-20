@@ -5,7 +5,6 @@ class ProductMongoManager {
     //static path;
 
     static async getProduct(page, limit, sort,cat){
-        //console.log(filter);
         return await productsModel.paginate({},{lean:true, page, limit, sort:{price:sort}})
     }
  

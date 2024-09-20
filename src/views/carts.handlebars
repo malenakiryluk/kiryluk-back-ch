@@ -1,6 +1,12 @@
 <h2>Carrito:</h2>
 
 <ul id="listConteinerCart">
-
+    {{#each cartProducts}}
+        <li>
+            <h3>{{product.title}}</h3>
+            <h3>{{product.description}}</h3>
+            <h3>{{product.price}}</h3>
+            <h3>{{product.category}}</h3>
+        </li>
+    {{/each}}
 </ul>
-<script src="/js/cart.js"></script>

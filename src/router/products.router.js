@@ -9,9 +9,7 @@ router.get ("/", async (req, res) => {
 
     let { page, limit, sort, cat } = req.query
     sort=Number(sort)
-    console.log(page,limit,sort,cat);
-    console.log(typeof cat);
-    //let filter = {category:cat}
+
     if (!page || isNaN(Number(page))){
         page = 1
     }
@@ -54,9 +52,7 @@ router.get("/:pid", async(req, res) => {
         return res.status(400).json({error:`ID en formato invalido`})
     }
 
-   // let products;
     try {
-        //products=await ProductManager.getProduct()
         let product=await ProductManager.getProductBy({_id:pid})
         if(!product){
             res.setHeader('Content-Type','application/json');
@@ -76,17 +72,6 @@ router.get("/:pid", async(req, res) => {
         )
     }
 
-    /*let product=products.find(p=>p.id===id)
-    
-    if(!product){
-    
-        res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`producto no encontrado con id ${id}`})
-    }
-    
-    res.setHeader('Content-Type','application/json');
-    return res.status(200).json({payload:product});*/
-
 
 })
 
@@ -105,12 +90,6 @@ router.post("/", async(req, res) => {
 
 
     try {
-       /* let products = await ProductManager.getProduct()
-        let existe = products.find(p=>p.code===code)
-        if(existe){
-            res.setHeader('Content-Type','application/json');
-            return res.status(400).json({error:`Ya existe un producto con codigo ${code}`});
-        }*/
     
         let existe = await ProductManager.getProductBy({code})
         if(existe){
@@ -170,9 +149,6 @@ router.put("/:pid", async(req, res) => {
         res.setHeader('Content-Type','application/json');
         return res.status(400).json({error:`producto no encontrado con id ${pid}`})
     }
-    /*let pAModificar=req.body
-
-    delete pAModificar.id;*/
 
 
     if(pAModificar.code){
@@ -217,12 +193,6 @@ router.delete("/:pid", async(req, res) => {
 
 
     try {
-        /*let resultado=await ProductManager.deleteProduct(id)
-        if(resultado>0){
-            let productsAct = await ProductManager.getProduct()
-            req.io.emit('productosActualizados', productsAct)
-
-        }*/
         let pDeleted=await ProductManager.deleteProduct(pid)
         if(!pDeleted){
             res.setHeader('Content-Type','application/json');
